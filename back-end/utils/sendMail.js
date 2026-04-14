@@ -1,30 +1,50 @@
-const { Resend } = require('resend');
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require('nodemailer');
+const { google } = require('googleapis');
 
-const sendMail = async (to, subject, text) => {
+const CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const REFRESH_TOKEN = process.env.GOOGLE_REFRESH_TOKEN;
+const REDIRECT_URI = 'https://developers.google.com/oauthplayground';
+
+const oAuth2Client = new google.auth.OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
+
+// 3 parameters: Kise bhejna hai, Kya subject hai, aur Kya message hai
+async function sendMail(targetEmail, subject, message) { 
   try {
-    const response = await resend.emails.send({
-      from: 'LocalPro <onboarding@resend.dev>',
-      to: to, // Yaad rahe: Testing mein wahi email daalein jisse Resend signup kiya hai
-      subject: subject,
-      text: text,
+    const accessToken = await oAuth2Client.getAccessToken();
+
+    const transport = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        type: 'OAuth2',
+        user: process.env.EMAIL_USER,
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken.token,
+      },
     });
 
-    // Resend ka naya version { data, error } return karta hai
-    const { data, error } = response;
+    const mailOptions = {
+      from: `LocalPro <${process.env.EMAIL_USER}>`,
+      to: targetEmail, 
+      subject: subject, // Ab ye dynamic hai
+      text: message,    // Ab ye dynamic hai
+      html: `<div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #eee;">
+               <h2 style="color: #333;">LocalPro Update</h2>
+               <p>${message}</p>
+               <br>
+               <p>Team Cyber Yodha</p>
+             </div>`,
+    };
 
-    if (error) {
-      console.error("Resend API Error:", error);
-      throw new Error(error.message);
-    }
-
-    console.log("Email sent successfully! ID:", data.id);
-    return data;
-
+    const result = await transport.sendMail(mailOptions);
+    return result;
   } catch (error) {
-    console.error("Internal sendMail Error:", error.message);
+    console.error("Email Error:", error);
     throw error;
   }
-};
+}
 
 module.exports = sendMail;

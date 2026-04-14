@@ -38,7 +38,7 @@ app.use('/service', service);
 app.use('/booking', booking);
 app.use('/review', review);
 
-const url = "mongodb+srv://Sahil:Sahilydv0214@sahil.ix9wnlh.mongodb.net/SmartService?appName=Sahil";
+const url = process.env.MONGO_URI;;
 
 mongoose.connect(url).then(() => {
     console.log("Mongoose Connected");
