@@ -16,26 +16,29 @@ oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 // 3 parameters: Kise bhejna hai, Kya subject hai, aur Kya message hai
 async function sendMail(targetEmail, subject, message) {
   console.log("Using IPv4 Family");
+  console.log(CLIENT_ID);
+  console.log(CLIENT_SECRET);
+  console.log(REFRESH_TOKEN);
   try {
     const accessToken = await oAuth2Client.getAccessToken();
-
+    console.log("Using IPv4 Family");
     const transport = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 587,
-      secure: false, 
-      family: 4, // YE SABSE ZAROORI HAI: Force IPv4
-      auth: {
-        type: 'OAuth2',
-        user: process.env.EMAIL_USER,
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken: accessToken.token,
-      },
-      tls: {
-        rejectUnauthorized: false
-      }
-    });
+  service: 'gmail',
+  auth: {
+    type: 'OAuth2',
+    user: process.env.EMAIL_USER,
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    refreshToken: REFRESH_TOKEN,
+    accessToken: accessToken.token,
+  },
+  // In extra settings se connection timeout nahi hoga
+  connectionTimeout: 10000, // 10 seconds tak wait karega
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+  debug: true, // Logs mein zyada details dikhayega
+  logger: true // Har step ko log karega
+});
 
     const mailOptions = {
       from: `LocalPro <${process.env.EMAIL_USER}>`,
