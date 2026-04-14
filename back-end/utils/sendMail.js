@@ -15,16 +15,23 @@ async function sendMail(targetEmail, subject, message) {
     const accessToken = await oAuth2Client.getAccessToken();
 
     const transport = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        type: 'OAuth2',
-        user: process.env.EMAIL_USER,
-        clientId: CLIENT_ID,
-        clientSecret: CLIENT_SECRET,
-        refreshToken: REFRESH_TOKEN,
-        accessToken: accessToken.token,
-      },
-    });
+  service: 'gmail',
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // Port 465 ke liye true
+  auth: {
+    type: 'OAuth2',
+    user: process.env.EMAIL_USER,
+    clientId: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    refreshToken: REFRESH_TOKEN,
+    accessToken: accessToken.token,
+  },
+  tls: {
+    // Ye line connection issues fix karne mein madad karti hai
+    rejectUnauthorized: false 
+  }
+});
 
     const mailOptions = {
       from: `LocalPro <${process.env.EMAIL_USER}>`,
