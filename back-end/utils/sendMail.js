@@ -4,11 +4,15 @@ const nodemailer = require("nodemailer");
 async function sendMail(targetEmail, subject, message) {
   try {
     const transport = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465, // SSL port aksar 587 se behtar kaam karta hai Render par
+      secure: true, // Port 465 ke liye true zaroori hai
       auth: {
         user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS, // Wo 16-character code jo aapne generate kiya
+        pass: process.env.EMAIL_PASS, // Aapka 16-letter App Password
       },
+      connectionTimeout: 20000, // Wait time badha diya
+      socketTimeout: 20000,
     });
 
     const mailOptions = {
