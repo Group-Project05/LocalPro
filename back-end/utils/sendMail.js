@@ -19,11 +19,12 @@ async function sendMail(targetEmail, subject, message) {
     const accessToken = await oAuth2Client.getAccessToken();
 
     const transport = nodemailer.createTransport({
-      host: "smtp.gmail.com",
+      host: 'smtp.gmail.com',
       port: 587,
-      secure: false, // 587 ke liye false hona chahiye
+      secure: false, 
+      family: 4, // YE SABSE ZAROORI HAI: Force IPv4
       auth: {
-        type: "OAuth2",
+        type: 'OAuth2',
         user: process.env.EMAIL_USER,
         clientId: CLIENT_ID,
         clientSecret: CLIENT_SECRET,
@@ -31,9 +32,8 @@ async function sendMail(targetEmail, subject, message) {
         accessToken: accessToken.token,
       },
       tls: {
-        // Yeh line connection timeout issues ko bypass karne mein help karti hai
-        rejectUnauthorized: false,
-      },
+        rejectUnauthorized: false
+      }
     });
 
     const mailOptions = {
