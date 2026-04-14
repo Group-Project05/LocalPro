@@ -157,11 +157,11 @@ const CreateService = () => {
                 <div className="w-1/3 space-y-1">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Basis</label>
                   <select
-                    name="priceCharge"
+                    name="chargeType"
                     className="w-full px-4 py-4 rounded-2xl border border-slate-200 bg-white font-bold text-sm outline-none h-[60px]"
                   >
-                    <option value="per hours">/ hr</option>
-                    <option value="fixed">Fixed</option>
+                    <option value="per hours">/Hr</option>
+                    <option value="fixed">/VISIT</option>
                   </select>
                 </div>
               </div>
@@ -235,7 +235,7 @@ export const createServiceAction = async ({ request }) => {
     },
     price: {
       amount: Number(rawData.priceAmount),
-      charge: rawData.priceCharge,
+      chargeType: rawData.chargeType,
     },
     images: rawData.images
   };
@@ -243,7 +243,7 @@ export const createServiceAction = async ({ request }) => {
   try {
     await api.post("/provider/createService", structuredData);
     toast.success("Service Created Successfully");
-    return redirect("/provider/my-service");
+    return redirect("/provider");
   } catch (err) {
     console.error("Create Service Error:", err);
     return { error: err.response?.data?.msg || "Failed to create Service" };

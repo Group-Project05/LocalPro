@@ -23,10 +23,20 @@ exports.getMyService = async (req, res, next) => {
 
 exports.delete_myservice = async (req, res, next) => {
   try {
-    const deleted = await Service.findByIdAndDelete(req.params.id);
-    res.json(deleted);
+    const { id } = req.params;
+    const service = await Service.findById(id);
+    if (!service) {
+      return res.status(404).json({ msg: "Service not found" });
+    }
+    await Service.findByIdAndDelete(id);
+    await User.updateMany({ favorites: id }, { $pull: { favorites: id } });
+
+    res
+      .status(200)
+      .json({ msg: "Service deleted and removed from all users' favorites" });
   } catch (err) {
-    res.status(500).json({ msg: "delete failed" });
+    console.error(err);
+    res.status(500).json({ msg: "Server error during deletion" });
   }
 };
 
@@ -37,8 +47,15 @@ exports.get_edit_myservice = async (req, res, next) => {
 
 exports.edit_myservice = async (req, res, next) => {
   const { title, category, description, images, address, price } = req.body;
-  
-  const updateValue = { title, category, description, price, location: address ,images };
+
+  const updateValue = {
+    title,
+    category,
+    description,
+    price,
+    location: address,
+    images,
+  };
   const updated = await Service.findByIdAndUpdate(req.params.id, updateValue, {
     new: true,
   });

@@ -45,7 +45,7 @@ const ProviderProfile = () => {
                 <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-8">
                     <div className="relative group">
                         <div className="w-28 h-28 rounded-[2.5rem] overflow-hidden shadow-2xl ring-4 ring-white">
-                            <img src="https://ui-avatars.com/api/?name=s" className="w-full h-full object-cover" />
+                            <img src={`https://ui-avatars.com/api/?name=${provider.name}`} className="w-full h-full object-cover" />
                         </div>
                         <div id="status-indicator"
                             className={`absolute -bottom-2 -right-2 px-3 py-1 rounded-xl border-4 border-white shadow-lg text-[10px] font-black uppercase tracking-tighter transition-all ${provider.status === "online" ? "bg-emerald-500 text-white" : "bg-slate-400 text-white"}`}

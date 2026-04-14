@@ -10,6 +10,8 @@ import store from "./store/store.js";
 import Main from "./pages/auth/Main.jsx";
 import Login ,{loginAccount} from "./pages/auth/Login.jsx";
 import Register, {createAccountAction} from "./pages/auth/Register.jsx";
+import ResetPassword from "./pages/auth/ResetPassword.jsx";
+import ForgotPassword from "./pages/auth/ForgotPassword.jsx";
 
 import User from "./pages/user/User.jsx";
 import Home from "./pages/user/Home.jsx";
@@ -43,7 +45,9 @@ const router = createBrowserRouter([
       children: [
         { path: "" , Component: Main},
         { path: "login", Component: Login, action:loginAccount }, 
-        { path: "register" , Component: Register , action:createAccountAction}
+        { path: "register" , Component: Register , action:createAccountAction},
+        { path: "forget-password" , Component: ForgotPassword},
+        { path: "reset-password/:token" , Component: ResetPassword},
       ],
     },
 
@@ -65,8 +69,8 @@ const router = createBrowserRouter([
     {
       path: "/provider", Component: ServiceProvider, loader: providerMiddleware,
       children: [
+        {path: "", Component: MyService},
         {path: "create", Component: CreateService, action: createServiceAction},
-        {path: "my-service", Component: MyService},
         {path: "edit/:id",Component: EditMyService, action: editServiceAction},
         {path: "service/request", Component: ServiceRequest},
         {path: "profile",Component: ProviderProfile,},

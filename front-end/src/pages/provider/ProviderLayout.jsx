@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../store/slice/authReducer";
 import { useEffect, useState } from "react";
 import api from "../../api";
-import { 
-  FaSuitcase, 
-  FaClipboardList, 
-  FaUserCog, 
-  FaSignOutAlt, 
-  FaChevronLeft, 
-  FaChartLine 
+import {
+  FaSuitcase,
+  FaClipboardList,
+  FaUserCog,
+  FaSignOutAlt,
+  FaChevronLeft,
+  FaChartLine
 } from "react-icons/fa";
 
 const ProviderLayout = ({ children }) => {
@@ -17,9 +17,9 @@ const ProviderLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector(state => state.auth.user);
-  
+
   const [activeRequests, setActiveRequests] = useState(0);
-  const [totalServices, setTotalServices] = useState(0);
+  const [newRequest, setNewRequest] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,11 +28,12 @@ const ProviderLayout = ({ children }) => {
           api.get("/booking/request"),
           api.get("/provider/myservice") // Adjust endpoint as per your API
         ]);
-        
+
         // Filter for requests that need action
-        const pending = requestRes.data.filter(r => r.status === "pending" || r.status === "accepted");
+        const pending = requestRes.data.filter(r => r.status === "confirmed");
+        const request = requestRes.data.filter(r => r.status === "pending");
         setActiveRequests(pending.length);
-        setTotalServices(serviceRes.data.length || 0);
+        setNewRequest(request.length)
       } catch (err) {
         console.error("Fetch Error:", err);
       }
@@ -50,7 +51,7 @@ const ProviderLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans antialiased selection:bg-teal-100 selection:text-teal-700">
-      
+
       {/* Mobile Header */}
       <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/60 lg:hidden">
         <div className="px-6 h-16 flex items-center justify-between">
@@ -62,28 +63,28 @@ const ProviderLayout = ({ children }) => {
             )}
             <Link to="/provider" className="text-2xl font-black text-slate-900 tracking-tighter italic">LocalPro</Link>
           </div>
-          <img 
-            src={`https://ui-avatars.com/api/?name=${user?.name}&background=0D9488&color=fff`} 
-            className="w-8 h-8 rounded-full border border-slate-200" 
-            alt="provider" 
+          <img
+            src={`https://ui-avatars.com/api/?name=${user?.name}&background=0D9488&color=fff`}
+            className="w-8 h-8 rounded-full border border-slate-200"
+            alt="provider"
           />
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
         <div className="flex flex-col lg:flex-row gap-10">
-          
+
           {/* Sidebar */}
           <aside className="hidden lg:block lg:w-[300px] lg:sticky lg:top-10 lg:h-[calc(100vh-80px)] overflow-y-auto space-y-6 p-1 [scrollbar-width:none]">
-            
+
             {/* Provider Branding Card */}
             <div className="bg-slate-900 rounded-[2.5rem] p-8 text-white shadow-2xl shadow-slate-900/20 relative overflow-hidden group">
               <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-500 rounded-full blur-[80px] opacity-20 transition-all group-hover:opacity-40"></div>
               <div className="relative z-10 space-y-4">
-                <img 
-                  src={`https://ui-avatars.com/api/?name=${user?.name}&background=0d9488&color=fff`} 
-                  className="w-16 h-16 rounded-2xl border-2 border-white/10 object-cover shadow-xl" 
-                  alt="avatar" 
+                <img
+                  src={`https://ui-avatars.com/api/?name=${user?.name}&background=0d9488&color=fff`}
+                  className="w-16 h-16 rounded-2xl border-2 border-white/10 object-cover shadow-xl"
+                  alt="avatar"
                 />
                 <div>
                   <h2 className="text-xl font-black tracking-tight">{user?.name || "Provider"}</h2>
@@ -99,28 +100,29 @@ const ProviderLayout = ({ children }) => {
                 <p className="text-2xl font-black text-slate-900">{activeRequests}</p>
               </div>
               <div className="bg-white p-5 rounded-[2rem] border border-slate-100 shadow-sm transition-transform hover:scale-[1.02]">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">Listed</p>
-                <p className="text-2xl font-black text-slate-900">{totalServices}</p>
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">New Req</p>
+                <p className="text-2xl font-black text-slate-900">{newRequest}</p>
               </div>
             </div>
 
             {/* Navigation Menu */}
             <nav className="bg-white rounded-[2.5rem] border border-slate-100 p-3 shadow-sm space-y-1.5">
-              <Link to="/provider/create" className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${isActive('/provider') ? 'bg-teal-50' : 'hover:bg-slate-50'}`}>
+
+              <Link to="/provider" className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${isActive('/provider') ? 'bg-teal-50' : 'hover:bg-slate-50'}`}>
                 <div className="flex items-center gap-4">
                   <div className={`p-3 rounded-xl transition-all ${isActive('/provider') ? 'bg-teal-600 text-white shadow-lg shadow-teal-200' : 'bg-slate-100 text-slate-600 group-hover:bg-teal-600 group-hover:text-white'}`}>
-                    <FaChartLine className="w-4 h-4" />
+                    <FaSuitcase className="w-4 h-4" />
                   </div>
-                  <span className={`text-sm font-black uppercase tracking-widest ${isActive('/provider') ? 'text-teal-700' : 'text-slate-600'}`}>Dashboard</span>
+                  <span className={`text-sm font-black uppercase tracking-widest ${isActive('/provider') ? 'text-teal-700' : 'text-slate-600'}`}>My Services</span>
                 </div>
               </Link>
 
-              <Link to="/provider/my-service" className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${isActive('/provider/my-service') ? 'bg-teal-50' : 'hover:bg-slate-50'}`}>
+              <Link to="/provider/create" className={`flex items-center justify-between p-4 rounded-2xl transition-all group ${isActive('/provider/create') ? 'bg-teal-50' : 'hover:bg-slate-50'}`}>
                 <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl transition-all ${isActive('/provider/my-service') ? 'bg-teal-600 text-white shadow-lg shadow-teal-200' : 'bg-slate-100 text-slate-600 group-hover:bg-teal-600 group-hover:text-white'}`}>
-                    <FaSuitcase className="w-4 h-4" />
+                  <div className={`p-3 rounded-xl transition-all ${isActive('/provider/create') ? 'bg-teal-600 text-white shadow-lg shadow-teal-200' : 'bg-slate-100 text-slate-600 group-hover:bg-teal-600 group-hover:text-white'}`}>
+                    <FaChartLine className="w-4 h-4" />
                   </div>
-                  <span className={`text-sm font-black uppercase tracking-widest ${isActive('/provider/my-service') ? 'text-teal-700' : 'text-slate-600'}`}>My Services</span>
+                  <span className={`text-sm font-black uppercase tracking-widest ${isActive('/provider/create') ? 'text-teal-700' : 'text-slate-600'}`}>Create Service</span>
                 </div>
               </Link>
 
@@ -159,8 +161,8 @@ const ProviderLayout = ({ children }) => {
                 <div className="flex items-center gap-4 group">
                   {/* Desktop Back Button */}
                   {isNotDashboard && (
-                    <button 
-                      onClick={() => navigate(-1)} 
+                    <button
+                      onClick={() => navigate(-1)}
                       className="hidden md:flex items-center justify-center w-12 h-12 rounded-2xl bg-white border border-slate-200 text-slate-600 hover:bg-teal-600 hover:text-white hover:border-teal-600 transition-all shadow-sm active:scale-95"
                     >
                       <FaChevronLeft />
@@ -191,11 +193,11 @@ const ProviderLayout = ({ children }) => {
 
       {/* Mobile Floating Nav (Provider Context) */}
       <nav className="lg:hidden fixed bottom-6 left-6 right-6 h-20 bg-slate-900/90 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-2xl flex justify-around items-center px-4 z-[100]">
-        <Link to="/provider/create" className={`p-4 transition-all flex flex-col items-center ${isActive('/provider') ? 'text-teal-400' : 'text-slate-400'}`}>
-          <FaChartLine className="text-xl" />
-        </Link>
-        <Link to="/provider/my-service" className={`p-4 transition-all flex flex-col items-center ${isActive('/provider/my-service') ? 'text-teal-400' : 'text-slate-400'}`}>
+        <Link to="/provider" className={`p-4 transition-all flex flex-col items-center ${isActive('/provider/my-service') ? 'text-teal-400' : 'text-slate-400'}`}>
           <FaSuitcase className="text-xl" />
+        </Link>
+        <Link to="/provider/create" className={`p-4 transition-all flex flex-col items-center ${isActive('/provider/create') ? 'text-teal-400' : 'text-slate-400'}`}>
+          <FaChartLine className="text-xl" />
         </Link>
         <Link to="/provider/service/request" className="p-4 text-white bg-teal-600 rounded-3xl shadow-lg shadow-teal-600/40 -mt-12 border-4 border-[#F8FAFC] flex flex-col items-center">
           <FaClipboardList className="text-xl" />
