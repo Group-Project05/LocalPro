@@ -19,26 +19,26 @@ async function sendMail(targetEmail, subject, message) {
   console.log(CLIENT_ID);
   console.log(CLIENT_SECRET);
   console.log(REFRESH_TOKEN);
+  console.log(process.env.EMAIL_USER);
   try {
     const accessToken = await oAuth2Client.getAccessToken();
     console.log("Using IPv4 Family");
     const transport = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    type: 'OAuth2',
-    user: process.env.EMAIL_USER,
-    clientId: CLIENT_ID,
-    clientSecret: CLIENT_SECRET,
-    refreshToken: REFRESH_TOKEN,
-    accessToken: accessToken.token,
-  },
-  // In extra settings se connection timeout nahi hoga
-  connectionTimeout: 10000, // 10 seconds tak wait karega
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-  debug: true, // Logs mein zyada details dikhayega
-  logger: true // Har step ko log karega
-});
+      host: "smtp.gmail.com",
+      port: 465, // 587 ki jagah 465 (SSL) try karein, ye kabhi-kabhi block nahi hota
+      secure: true,
+      auth: {
+        type: "OAuth2",
+        user: process.env.EMAIL_USER,
+        clientId: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
+        refreshToken: REFRESH_TOKEN,
+        accessToken: accessToken.token,
+      },
+      connectionTimeout: 30000, // Timeout badha kar 30 seconds karein
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
+    });
 
     const mailOptions = {
       from: `LocalPro <${process.env.EMAIL_USER}>`,
