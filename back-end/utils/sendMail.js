@@ -6,7 +6,10 @@ const sendMail = async (to, subject, text) => {
     auth: {
       user: process.env.EMAIL,
       pass: process.env.EMAIL_PASS
-    }
+    },
+    tls: {
+    rejectUnauthorized: false 
+  }
   });
 
   await transporter.sendMail({

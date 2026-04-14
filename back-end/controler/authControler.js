@@ -22,6 +22,7 @@ exports.register = async (req, res, next) => {
 };
 
 exports.login = async (req, res, next) => {
+  console.log('hlo login')
   const { email, password } = req.body;
 
   const user = await User.findOne({ email: email.trim().toLowerCase() });
@@ -58,6 +59,7 @@ exports.profileById = async (req, res, next) => {
 };
 
 exports.forgotPass = async (req, res, next) => {
+  console.log('hlo forgot')
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
@@ -65,17 +67,20 @@ exports.forgotPass = async (req, res, next) => {
       return res.status(404).json({ msg: "User not found" });
     }
     const token = crypto.randomBytes(20).toString('hex');
+    console.log(token)
     user.resetToken = token; 
     user.resetTokenExpire = Date.now() + 10 * 60 * 1000;
 
     await user.save();
     const resetLink = `https://local-pro-one.vercel.app/reset-password/${token}`;
 
+    console.log(resetLink)
     await sendMail(
       user.email,
       "Password Reset - LocalPro",
       `Click here to reset password: ${resetLink} valid for 10 min`,
     );
+    console.log('hlo forgot end')
     res.json({ msg: "Reset link sent to your email" });
 
   } catch (error) {
