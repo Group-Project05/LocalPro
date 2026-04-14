@@ -10,7 +10,7 @@ const sendMail = async (to, subject, text) => {
   });
 
   await transporter.sendMail({
-    from: 'LocalPro Security <security@localpro.com>',
+    from: `LocalPro Security ${process.env.EMAIL}`,
     to,
     subject,
     text
