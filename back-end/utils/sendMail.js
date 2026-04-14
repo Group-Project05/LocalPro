@@ -26,3 +26,5 @@ const sendMail = async (to, subject, text) => {
     throw error;
   }
 };
+
+module.exports = sendMail;
