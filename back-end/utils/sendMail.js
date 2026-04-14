@@ -15,6 +15,7 @@ oAuth2Client.setCredentials({ refresh_token: REFRESH_TOKEN });
 
 // 3 parameters: Kise bhejna hai, Kya subject hai, aur Kya message hai
 async function sendMail(targetEmail, subject, message) {
+  console.log("Using IPv4 Family");
   try {
     const accessToken = await oAuth2Client.getAccessToken();
 
