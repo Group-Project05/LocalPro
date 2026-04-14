@@ -2,33 +2,37 @@ const nodemailer = require("nodemailer");
 
 const sendMail = async (to, subject, text) => {
   const transporter = nodemailer.createTransport({
-    service: "gmail",
     host: "smtp.gmail.com",
     port: 587,
     secure: false,
-    pool: true,
     auth: {
       user: process.env.EMAIL,
       pass: process.env.EMAIL_PASS,
     },
-    connectionTimeout: 20000,
-    greetingTimeout: 20000,
-    socketTimeout: 20000,
+    connectionTimeout: 30000, 
+    greetingTimeout: 30000,
+    socketTimeout: 30000,
     tls: {
-      rejectUnauthorized: false,
+      rejectUnauthorized: false, 
+      minVersion: "TLSv1.2"
     },
   });
 
   try {
-    await transporter.sendMail({
-      from: `"Smart Service" <${process.env.EMAIL}>`,
+    await transporter.verify();
+    console.log("SMTP Connection Verified!");
+
+    const info = await transporter.sendMail({
+      from: `"LocalPro" <${process.env.EMAIL}>`,
       to,
       subject,
       text,
     });
-    console.log("Email sent successfully");
+    
+    console.log("Message sent: %s", info.messageId);
+    return info;
   } catch (error) {
-    console.error("Nodemailer Internal Error:", error);
+    console.error("Nodemailer Error Trace:", error);
     throw error;
   }
 };
