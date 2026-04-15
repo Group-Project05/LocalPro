@@ -33,7 +33,7 @@ const EditMyService = () => {
         setService(res.data);
       } catch (err) {
         toast.error("Failed to load service data");
-        navigate("/provider/my-service");
+        navigate("/provider");
       }
     };
     fetchService();
@@ -232,7 +232,7 @@ export const editServiceAction = async ({ request, params }) => {
   try {
     await api.put(`/provider/edit/${id}`, structuredData);
     toast.success("Service Updated Successfully");
-    return redirect("/provider/my-service");
+    return redirect("/provider");
   } catch (err) {
     console.error("Edit Service Error:", err);
     return { error: err.response?.data?.msg || "Failed to update service" };
